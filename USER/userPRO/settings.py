@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'testlar',
+    'crispy_forms',
+    'social_django'
 ]
-AUTH_USER_MODEL='testlar.CustomUser'
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'userPRO.urls'
@@ -64,11 +66,23 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+
+                'social_django.context_processors.backends',  # <--
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+SOCIAL_AUTH_GITHUB_KEY='6dd69017d8351d470c24'
+SOCIAL_AUTH_GITHUB_SECRET='4b8fda42372fc4ce6f134dc5bebc411dd7684783'
 WSGI_APPLICATION = 'userPRO.wsgi.application'
 
 
@@ -119,4 +133,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+
+LOGIN_REDIRECT_URL='home'
+LOGOUT_REDIRECT_URL = 'home'
+
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]

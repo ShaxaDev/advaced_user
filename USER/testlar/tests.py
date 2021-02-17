@@ -3,37 +3,38 @@ from django.test import TestCase
 
 # Create your tests here.
 from django.urls import reverse, resolve
+from .forms import UserC
 
-from userPRO.views import home
 
+from .models import Book, Review
+from .views import sign
 
 class Userclass(TestCase):
+    username = 'newuser'
+    email = 'newuser@email.com'
 
     def setUp(self) -> None:
-        url=reverse('home')
-        self.response=self.client.get(url)
+        self.book=Book.objects.create(title='Django',author='Shaxzod',price=123)
+        self.user=get_user_model().objects.create(
+            username='Shaxa',
+            email='reviewuser@email.com',
+            password='testpass123'
 
-    def test_create_user(self):
-        User=get_user_model()
-        user=User.objects.create(
-            username='Shaxzod',
-            email='will@email.com',
-            password='testpass123',
-            is_superuser=True
+        )
+        self.review=Review.objects.create(
+            book=self.book,
+            author=self.user,
+            review='Groosha'
         )
 
-        self.assertTrue(user.is_superuser)
+    def test_review(self):
+        self.assertEqual(self.book.title,'Django')
+        self.assertEqual(self.book.author,'Shaxzod')
+        self.assertEqual(self.book.price,123)
 
-    def test_get(self):
-        self.assertEquals(self.response.status_code,200)
-        self.assertTemplateUsed(self.response,'home.html')
+    def test_book(self):
+        response=self.client.get(self.book.get_absolute_url())
+        self.assertEqual(response.status_code,200)
+        self.assertTemplateUsed(response,'books/book_detail.html')
+        self.assertNotContains(response,'Ali')
 
-    def test_home_page(self):
-        self.assertEquals(self.response.status_code,200)
-
-    def test_home_get(self):
-        self.assertContains(self.response,'Hello')
-
-    def test_resolve_home_page(self):
-        view=resolve('/')
-        self.assertEquals(view.func,home)
